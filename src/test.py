@@ -1,11 +1,4 @@
-import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog
-from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
-from pathlib import Path
-from PyQt5.QtGui import QPixmap
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-from sidebar_ui import Ui_MainWindow
 
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
@@ -80,78 +73,47 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
         super(PhotoViewer, self).mousePressEvent(event)
 
-class MainWindow(QMainWindow):
+
+class Window(QtWidgets.QWidget):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super(Window, self).__init__()
+        self.viewer = PhotoViewer(self)
+        # 'Load image' button
+        self.btnLoad = QtWidgets.QToolButton(self)
+        self.btnLoad.setText('Load image')
+        self.btnLoad.clicked.connect(self.loadImage)
+        # Button to change from drag/pan to getting pixel info
+        self.btnPixInfo = QtWidgets.QToolButton(self)
+        self.btnPixInfo.setText('Enter pixel info mode')
+        self.btnPixInfo.clicked.connect(self.pixInfo)
+        self.editPixInfo = QtWidgets.QLineEdit(self)
+        self.editPixInfo.setReadOnly(True)
+        self.viewer.photoClicked.connect(self.photoClicked)
+        # Arrange layout
+        VBlayout = QtWidgets.QVBoxLayout(self)
+        VBlayout.addWidget(self.viewer)
+        HBlayout = QtWidgets.QHBoxLayout()
+        HBlayout.setAlignment(QtCore.Qt.AlignLeft)
+        HBlayout.addWidget(self.btnLoad)
+        HBlayout.addWidget(self.btnPixInfo)
+        HBlayout.addWidget(self.editPixInfo)
+        VBlayout.addLayout(HBlayout)
 
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+    def loadImage(self):
+        self.viewer.setPhoto(QtGui.QPixmap('raiox.jpg'))
 
-        self.ui.icon_only_widget.hide()
-        self.ui.home_btn_2.setChecked(True)
-        
-        # Read file when click button folder
-        self.button = self.findChild(QPushButton, 'user_btn')
-        self.button.clicked.connect(self.open_image)
-        
-        # Load default image
-        self.current_file = "default.png"
-        self.pixmap = QPixmap(self.current_file)
-        self.pixmap = self.pixmap.scaled(self.width(), self.height())
-        self.label = self.findChild(QLabel, 'label')
-        self.label.setPixmap(self.pixmap)
-        self.label.setMinimumSize(1, 1)
-        
-    def resizeEvent(self, event):
-        try:
-            self.pixmap = QPixmap(self.current_file)
-        except Exception:
-            self.pixmap = QPixmap('default.png')
+    def pixInfo(self):
+        self.viewer.toggleDragMode()
 
-        self.pixmap = self.pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(self.pixmap)
-        self.label.resize(self.width(), self.height())
-        
-    def open_image(self):
-        downloads_path = str(Path.home() / "Downloads")
-        filename, _ = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
-        
-        if filename != "":
-            self.current_file = filename
-            self.pixmap = QPixmap(self.current_file)
-            self.pixmap = self.pixmap.scaled(self.width(), self.height())
-            self.label.setPixmap(self.pixmap)
-    
-    # Read image
-    # def clicker(self):
-    #     downloads_path = str(Path.home() / "Downloads")
-    #     fname = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
-    #     self.current_file = fname[0]
-    #     
-    #     self.pixmap = QPixmap(fname[0])
-    #     self.pixmap = self.pixmap.scaled(self.width(), self.height())
-    #     # Add picture to label
-    #     self.label.setPixmap(self.pixmap)
-    #     self.label.setMinimumSize(1, 1)
-    #     self.label.setMaximumSize(1200, 700)
-        
+    def photoClicked(self, pos):
+        if self.viewer.dragMode()  == QtWidgets.QGraphicsView.NoDrag:
+            self.editPixInfo.setText('%d, %d' % (pos.x(), pos.y()))
 
-def main():
-    # Start Application
-    app = QApplication(sys.argv)
-    
-    # Load Style
-    style_file = QFile("style/style.qss")
-    style_file.open(QFile.ReadOnly | QFile.Text)
-    style_stream = QTextStream(style_file)
-    app.setStyleSheet(style_stream.readAll())
-    
-    # Call main window
-    window = MainWindow()
-    window.show()
-    
-    # If exit application
-    sys.exit(app.exec())
 
 if __name__ == '__main__':
-    main()
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    window = Window()
+    window.setGeometry(500, 300, 800, 600)
+    window.show()
+    sys.exit(app.exec_())
