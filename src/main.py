@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog, QWidget
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from pathlib import Path
 from PyQt5.QtGui import QPixmap
@@ -82,8 +82,14 @@ class PhotoViewer(QtWidgets.QGraphicsView):
 
 class MainWindow(QMainWindow):
     def __init__(self):
+        # Set configuration for main window
         super(MainWindow, self).__init__()
-
+        self.viewer = PhotoViewer(self)
+        
+        # Create layout for Image Viewer
+        VBlayout = QtWidgets.QVBoxLayout(self)
+        VBlayout.addWidget(self.viewer)
+        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
@@ -94,46 +100,15 @@ class MainWindow(QMainWindow):
         self.button = self.findChild(QPushButton, 'user_btn')
         self.button.clicked.connect(self.open_image)
         
-        # Load default image
-        self.current_file = "default.png"
-        self.pixmap = QPixmap(self.current_file)
-        self.pixmap = self.pixmap.scaled(self.width(), self.height())
-        self.label = self.findChild(QLabel, 'label')
-        self.label.setPixmap(self.pixmap)
-        self.label.setMinimumSize(1, 1)
-        
-    def resizeEvent(self, event):
-        try:
-            self.pixmap = QPixmap(self.current_file)
-        except Exception:
-            self.pixmap = QPixmap('default.png')
-
-        self.pixmap = self.pixmap.scaled(self.width(), self.height())
-        self.label.setPixmap(self.pixmap)
-        self.label.resize(self.width(), self.height())
+        # Set Image Viewer into widget
+        self.widget = self.findChild(QWidget, 'widget_image')
+        self.widget.setLayout(VBlayout)
         
     def open_image(self):
         downloads_path = str(Path.home() / "Downloads")
-        filename, _ = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
-        
-        if filename != "":
-            self.current_file = filename
-            self.pixmap = QPixmap(self.current_file)
-            self.pixmap = self.pixmap.scaled(self.width(), self.height())
-            self.label.setPixmap(self.pixmap)
-    
-    # Read image
-    # def clicker(self):
-    #     downloads_path = str(Path.home() / "Downloads")
-    #     fname = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
-    #     self.current_file = fname[0]
-    #     
-    #     self.pixmap = QPixmap(fname[0])
-    #     self.pixmap = self.pixmap.scaled(self.width(), self.height())
-    #     # Add picture to label
-    #     self.label.setPixmap(self.pixmap)
-    #     self.label.setMinimumSize(1, 1)
-    #     self.label.setMaximumSize(1200, 700)
+        fname = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
+        self.pixmap = QPixmap(fname[0])
+        self.viewer.setPhoto(self.pixmap)
         
 
 def main():

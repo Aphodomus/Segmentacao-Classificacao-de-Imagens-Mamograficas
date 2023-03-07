@@ -29,7 +29,7 @@
   ==================================================== */
   	/* style for widget */
 	#icon_only_widget {
-		background-color: #313a46;
+		background-color: #1e1e1e;
 		width:50px;
 	}
 
@@ -55,7 +55,7 @@
   ==================================================== */
 	/* style for widget */
 	#full_menu_widget {
-		background-color: #313a46;
+		background-color: #1e1e1e;
 	}
 
 	/* style for QPushButton */

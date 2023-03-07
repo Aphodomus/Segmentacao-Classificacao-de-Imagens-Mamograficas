@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './sidebar.ui'
+# Form implementation generated from reading ui file './sidebar2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -58,11 +58,9 @@ class Ui_MainWindow(object):
         self.user_btn.setObjectName("user_btn")
         self.horizontalLayout_4.addWidget(self.user_btn)
         self.verticalLayout_5.addWidget(self.widget)
-        self.label = QtWidgets.QLabel(self.widget_3)
-        self.label.setText("")
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.label.setObjectName("label")
-        self.verticalLayout_5.addWidget(self.label)
+        self.widget_image = QtWidgets.QWidget(self.widget_3)
+        self.widget_image.setObjectName("widget_image")
+        self.verticalLayout_5.addWidget(self.widget_image)
         self.gridLayout.addWidget(self.widget_3, 0, 2, 1, 1)
         self.icon_only_widget = QtWidgets.QWidget(self.centralwidget)
         self.icon_only_widget.setObjectName("icon_only_widget")
