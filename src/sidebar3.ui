@@ -401,6 +401,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
             <widget class="QLabel" name="label_text_min">
+             <property name="styleSheet">
+              <string notr="true">color: white;</string>
+             </property>
              <property name="text">
               <string>Min:</string>
              </property>
@@ -408,6 +411,9 @@
            </item>
            <item>
             <widget class="QLabel" name="label_min">
+             <property name="styleSheet">
+              <string notr="true">color: white;</string>
+             </property>
              <property name="text">
               <string>0</string>
              </property>
@@ -452,6 +458,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
             <widget class="QLabel" name="label_text_max">
+             <property name="styleSheet">
+              <string notr="true">color: white;</string>
+             </property>
              <property name="text">
               <string>Max:</string>
              </property>
@@ -459,6 +468,9 @@
            </item>
            <item>
             <widget class="QLabel" name="label_max">
+             <property name="styleSheet">
+              <string notr="true">color: white;</string>
+             </property>
              <property name="text">
               <string>0</string>
              </property>

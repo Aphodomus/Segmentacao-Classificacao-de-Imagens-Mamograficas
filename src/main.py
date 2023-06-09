@@ -2,8 +2,10 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog, QWidget
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from pathlib import Path
-from PyQt5.QtGui import QPixmap
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QPixmap, QImage
+from PyQt5 import QtCore, QtGui, QtWidgets, uic
+import cv2
+import numpy as np
 
 from sidebar_ui import Ui_MainWindow
 
@@ -90,9 +92,9 @@ class MainWindow(QMainWindow):
         VBlayout = QtWidgets.QVBoxLayout(self)
         VBlayout.addWidget(self.viewer)
         
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-
+        self.ui = uic.loadUi("sidebar3.ui", self)
+        
+        # Hide the slidebar when first init
         self.ui.icon_only_widget.hide()
         self.ui.home_btn_2.setChecked(True)
         
@@ -104,11 +106,81 @@ class MainWindow(QMainWindow):
         self.widget = self.findChild(QWidget, 'widget_image')
         self.widget.setLayout(VBlayout)
         
+        # Slider config min max
+        self.ui.horizontalSlider_min.valueChanged.connect(self.number_change_min)
+        self.ui.horizontalSlider_max.valueChanged.connect(self.number_change_max)
+        self.value_min = 0
+        self.value_max = 0
+        
+        # Create main pixelmap and original image
+        self.pixmap = None
+        self.original_image = None
+        
+        # Reset image to original
+        self.ui.dashborad_btn_2.clicked.connect(self.reset_image)
+        
     def open_image(self):
         downloads_path = str(Path.home() / "Downloads")
         fname = QFileDialog.getOpenFileName(self, 'Open File', f'''{downloads_path}''', "Image Files (*.png *.tiff *.jpg)")
         self.pixmap = QPixmap(fname[0])
+        self.original_image = self.pixmap
         self.viewer.setPhoto(self.pixmap)
+        
+    def reset_image(self):
+        self.pixmap = self.original_image
+        self.viewer.setPhoto(self.pixmap)
+        
+    def number_change_min(self):
+        if self.pixmap != None:
+            new_value_min = str(self.ui.horizontalSlider_min.value())
+            self.ui.label_min.setText(new_value_min)
+            self.value_min = new_value_min
+            pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            self.viewer.setPhoto(pixmap_window)
+        
+    def number_change_max(self):
+        if self.pixmap != None:
+            new_value_max = str(self.ui.horizontalSlider_max.value())
+            self.ui.label_max.setText(new_value_max)
+            self.value_max = new_value_max
+            pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            self.viewer.setPhoto(pixmap_window)
+        
+    def apply_window_level(self, pixmap, window_center, window_width):
+        # Converte o pixmap em um QImage
+        image = pixmap.toImage()
+
+        # Converte o QImage em um numpy array
+        w, h = image.width(), image.height()
+        data = image.bits().asarray(w * h * 4)
+        img_arr = np.asarray(data).reshape(h, w, 4)
+
+        # Remove o canal alpha da imagem (se houver)
+        if img_arr.shape[-1] == 4:
+            img_arr = img_arr[..., :3]
+
+        # Converte a imagem para escala de cinza (se necessário)
+        if img_arr.ndim == 3 and img_arr.shape[-1] == 3:
+            img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)
+
+        # Define os valores mínimo e máximo da janela de visualização
+        window_min = window_center - (window_width / 2)
+        window_max = window_center + (window_width / 2)
+
+        # Verifica se window_min é igual a window_max
+        if window_min == window_max:
+            img_arr = np.full_like(img_arr, 255, dtype=np.uint8)
+        else:
+            # Aplica a janela de visualização à imagem
+            img_arr = np.clip(img_arr, window_min, window_max)
+            img_arr = (img_arr - window_min) / (window_max - window_min)
+            img_arr *= 255
+
+        # Converte a imagem de volta para um QPixmap
+        image = QImage(img_arr.astype(np.uint8), w, h, QImage.Format_Grayscale8)
+        pixmap = QPixmap.fromImage(image)
+
+        return pixmap
         
 
 def main():
