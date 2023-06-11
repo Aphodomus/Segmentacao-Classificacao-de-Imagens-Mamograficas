@@ -1,4 +1,5 @@
 import sys
+import time
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog, QWidget
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from pathlib import Path
@@ -6,11 +7,15 @@ from PyQt5.QtGui import QPixmap, QImage
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import cv2
 import numpy as np
+from PIL import Image, ImageQt
 
 from sidebar_ui import Ui_MainWindow
 
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
+    inicialVmax = 0
+    inicialVmin = 0
+
 
     def __init__(self, parent):
         super(PhotoViewer, self).__init__(parent)
@@ -129,57 +134,58 @@ class MainWindow(QMainWindow):
     def reset_image(self):
         self.pixmap = self.original_image
         self.viewer.setPhoto(self.pixmap)
+        self.ui.label_min.setText(0)
+        self.ui.label_max.setText(128)
+
+    
+    def aplly(self):
+        self.pixmap = self.original_image
+        pixmap_window = self.apply_window_level(self.pixmap)
+        self.viewer.setPhoto(pixmap_window)
         
     def number_change_min(self):
         if self.pixmap != None:
             new_value_min = str(self.ui.horizontalSlider_min.value())
             self.ui.label_min.setText(new_value_min)
             self.value_min = new_value_min
-            pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
-            self.viewer.setPhoto(pixmap_window)
+            #pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            #self.viewer.setPhoto(pixmap_window)
+    
         
     def number_change_max(self):
         if self.pixmap != None:
-            new_value_max = str(self.ui.horizontalSlider_max.value())
+            new_value_max = self.ui.horizontalSlider_max.value()
             self.ui.label_max.setText(new_value_max)
             self.value_max = new_value_max
-            pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
-            self.viewer.setPhoto(pixmap_window)
+            #pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            #self.viewer.setPhoto(pixmap_window)
+    
         
-    def apply_window_level(self, pixmap, window_center, window_width):
+    def apply_window_level(self, pixmap):
+        minV = round(self.ui.horizontalSlider_min.value() / 2)
+        maxV = round(128 + self.ui.horizontalSlider_max.value() / 2 )
         # Converte o pixmap em um QImage
-        image = pixmap.toImage()
+        qImage = pixmap.toImage()
+        QImgem2 = qImage
 
         # Converte o QImage em um numpy array
-        w, h = image.width(), image.height()
-        data = image.bits().asarray(w * h * 4)
-        img_arr = np.asarray(data).reshape(h, w, 4)
+        w, h = qImage.width(), qImage.height()
+        data = qImage.bits().asarray(w * h * 4)
+        arr = np.asarray(data).reshape(h, w, 4)
+        # Converter o array em um objeto de imagem usando a biblioteca Pillow
+        adjusted_image = np.clip(arr, minV, maxV)
 
-        # Remove o canal alpha da imagem (se houver)
-        if img_arr.shape[-1] == 4:
-            img_arr = img_arr[..., :3]
+        img = Image.fromarray(adjusted_image)
 
-        # Converte a imagem para escala de cinza (se necessário)
-        if img_arr.ndim == 3 and img_arr.shape[-1] == 3:
-            img_arr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2GRAY)
 
-        # Define os valores mínimo e máximo da janela de visualização
-        window_min = window_center - (window_width / 2)
-        window_max = window_center + (window_width / 2)
+        # Converter a imagem Pillow em uma QImage
+        qimg = ImageQt.toqimage(img)
 
-        # Verifica se window_min é igual a window_max
-        if window_min == window_max:
-            img_arr = np.full_like(img_arr, 255, dtype=np.uint8)
+        # Verificar se a conversão foi bem-sucedida
+        if not qimg.isNull():
+            pixmap = QPixmap.fromImage(qimg)
         else:
-            # Aplica a janela de visualização à imagem
-            img_arr = np.clip(img_arr, window_min, window_max)
-            img_arr = (img_arr - window_min) / (window_max - window_min)
-            img_arr *= 255
-
-        # Converte a imagem de volta para um QPixmap
-        image = QImage(img_arr.astype(np.uint8), w, h, QImage.Format_Grayscale8)
-        pixmap = QPixmap.fromImage(image)
-
+            pixmap = QPixmap.fromImage(QImgem2)
         return pixmap
         
 
