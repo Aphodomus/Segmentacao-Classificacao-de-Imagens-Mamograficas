@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog, QWidget
 from PyQt5.QtCore import pyqtSlot, QFile, QTextStream
 from pathlib import Path
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage, QIcon
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 import cv2
 import numpy as np
@@ -87,6 +87,7 @@ class MainWindow(QMainWindow):
         # Set configuration for main window
         super(MainWindow, self).__init__()
         self.viewer = PhotoViewer(self)
+        self.setStyleSheet("QMainWindow::titleBar { background-color: blue; }")
         
         # Create layout for Image Viewer
         VBlayout = QtWidgets.QVBoxLayout(self)
@@ -195,6 +196,8 @@ def main():
     
     # Call main window
     window = MainWindow()
+    window.setWindowTitle("Segmentação e Classificação de Imagens Mamográficas")
+    window.setWindowIcon(QIcon('raiox.jpg'))
     window.show()
     
     # If exit application
