@@ -92,7 +92,6 @@ class MainWindow(QMainWindow):
         # Set configuration for main window
         super(MainWindow, self).__init__()
         self.viewer = PhotoViewer(self)
-        self.setStyleSheet("QMainWindow::titleBar { background-color: blue; }")
         
         # Create layout for Image Viewer
         VBlayout = QtWidgets.QVBoxLayout(self)
@@ -135,9 +134,6 @@ class MainWindow(QMainWindow):
     def reset_image(self):
         self.pixmap = self.original_image
         self.viewer.setPhoto(self.pixmap)
-        self.ui.label_min.setText(0)
-        self.ui.label_max.setText(128)
-
     
     def aplly(self):
         self.pixmap = self.original_image
@@ -149,8 +145,8 @@ class MainWindow(QMainWindow):
             new_value_min = str(self.ui.horizontalSlider_min.value())
             self.ui.label_min.setText(new_value_min)
             self.value_min = new_value_min
-            #pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
-            #self.viewer.setPhoto(pixmap_window)
+            # pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            # self.viewer.setPhoto(pixmap_window)
     
         
     def number_change_max(self):
@@ -158,8 +154,8 @@ class MainWindow(QMainWindow):
             new_value_max = self.ui.horizontalSlider_max.value()
             self.ui.label_max.setText(new_value_max)
             self.value_max = new_value_max
-            #pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
-            #self.viewer.setPhoto(pixmap_window)
+            # pixmap_window = self.apply_window_level(self.pixmap, float(self.value_min), float(self.value_max))
+            # self.viewer.setPhoto(pixmap_window)
     
         
     def apply_window_level(self, pixmap):
