@@ -1,3 +1,6 @@
+# Daniel Vitor de Oliveira Santos, 716417, Ciência da Computação Coração Eucarístico
+# Guilherme Cosso Lima Pimenta, gclpimenta@sga.pucminas.br, Ciência da Computação Coração Eucarístico
+# Larissa Kaweski Siqueira, larissa.kaweski@sga.pucminas.br, Ciência da Computação Coração Eucarístico
 import sys
 import time
 from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLabel, QFileDialog, QWidget

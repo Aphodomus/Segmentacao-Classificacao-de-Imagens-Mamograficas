@@ -1,3 +1,6 @@
+# Daniel Vitor de Oliveira Santos, 716417, Ciência da Computação Coração Eucarístico
+# Guilherme Cosso Lima Pimenta, gclpimenta@sga.pucminas.br, Ciência da Computação Coração Eucarístico
+# Larissa Kaweski Siqueira, larissa.kaweski@sga.pucminas.br, Ciência da Computação Coração Eucarístico
 # -*- coding: utf-8 -*-
 
 # Form implementation generated from reading ui file './sidebar2.ui'
