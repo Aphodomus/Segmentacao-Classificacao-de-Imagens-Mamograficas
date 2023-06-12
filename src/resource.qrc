@@ -1,5 +1,17 @@
 <RCC>
   <qresource prefix="icon">
+    <file>icon/class-data-icon-215939 (1).ico</file>
+    <file>icon/class-data-icon-215939.ico</file>
+    <file>icon/fullcut-cut-scissors-4720 (1).ico</file>
+    <file>icon/fullcut-cut-scissors-4720.ico</file>
+    <file>icon/reset-undo-arrow-icon-149006-1.ico</file>
+    <file>class-data-icon-215939.ico</file>
+    <file>class-data-icon-215939 (1).ico</file>
+    <file>class-data-icon-215939.ico</file>
+    <file>fullcut-cut-scissors-4720 (1).ico</file>
+    <file>fullcut-cut-scissors-4720.ico</file>
+    <file>reset-undo-arrow-icon-149006-1.ico</file>
+    <file>reset-undo-arrow-icon-149006-1.ico</file>
     <file>icon/drag-gray.ico</file>
     <file>icon/drag-white.ico</file>
     <file>icon/zoom-gray.ico</file>
@@ -23,7 +35,7 @@
     <file>icon/search-13-48.ico</file>
     <file>icon/user-48.ico</file>
     <file>icon/virus_check_mark_rib_cage_xray_icon_142198.ico</file>
-    <file>icon/reset-undo-arrow-icon-149006-_1_.ico</file>
     <file>icon/reset-undo-arrow-icon-149006.ico</file>
+    <file>reset-undo-arrow-icon-149006-white</file>
   </qresource>
 </RCC>
