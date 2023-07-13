@@ -1,1 +1,5 @@
 images
+train_model/images_segmented
+train_model/images_segmented_label
+train_model/images_train_segmented_increased
+train_model/model_weights
